@@ -80,9 +80,36 @@ def post_new_cafe():
     else:
         return render_template("add.html")
 
+
 # HTTP PUT/PATCH - Update Record
+@app.route("/update-price/<int:cafe_id>", methods=["GET", "POST"])
+def update_coffee_price(cafe_id):
+    cafe = db.session.query(Cafe).get(cafe_id)
+    if not cafe:
+        return jsonify(response={"error": f"Cafe with id {cafe_id} does not exist."})
+
+    new_price = request.args.get('price')
+    if not new_price or not new_price.isnumeric():
+        return jsonify(response={"error": f"{new_price} is not a valid price."})
+    cafe.coffee_price = new_price
+    db.session.commit()
+    return jsonify(response={"success": f"Successfully updated price for cafe {cafe.name}."})
+
 
 # HTTP DELETE - Delete Record
+@app.route("/remove/<int:cafe_id>", methods=["GET", "DELETE"])
+def remove_cafe(cafe_id):
+    secret_key = request.args.get("api_key")
+    if secret_key != "SUPERSECRETKEY":
+        return jsonify(error={"Forbidden": "Sorry, that's not allowed. Make sure you have the correct api_key."}), 403
+
+    cafe = db.session.query(Cafe).get(cafe_id)
+    if cafe:
+        db.session.delete(cafe)
+        db.session.commit()
+        return jsonify(response={"success": f"Cafe with id {cafe_id} was deleted."}), 200
+    else:
+        return jsonify(response={"error": f"Cafe with id {cafe_id} does not exist."}), 404
 
 
 if __name__ == '__main__':
