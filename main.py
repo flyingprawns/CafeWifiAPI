@@ -83,7 +83,7 @@ def post_new_cafe():
 
 # HTTP PUT/PATCH - Update Record
 @app.route("/update-price/<int:cafe_id>", methods=["GET", "POST"])
-def update_coffee_price(cafe_id):
+def patch_new_price(cafe_id):
     cafe = db.session.query(Cafe).get(cafe_id)
     if not cafe:
         return jsonify(response={"error": f"Cafe with id {cafe_id} does not exist."})
@@ -98,7 +98,7 @@ def update_coffee_price(cafe_id):
 
 # HTTP DELETE - Delete Record
 @app.route("/remove/<int:cafe_id>", methods=["GET", "DELETE"])
-def remove_cafe(cafe_id):
+def delete_cafe(cafe_id):
     secret_key = request.args.get("api_key")
     if secret_key != "SUPERSECRETKEY":
         return jsonify(error={"Forbidden": "Sorry, that's not allowed. Make sure you have the correct api_key."}), 403
